@@ -144,7 +144,8 @@ def main():
         clock.tick(SPEED)
         handle_keys(snake)
         snake.move()
-        if len(snake.positions) > 4 and snake.positions[0] in snake.positions[2:]:
+        if len(snake.positions
+               ) > 4 and snake.positions[0] in snake.positions[2:]:
             snake.reset()
         if snake.get_head_position() == apple.position:
             snake.length += 1
