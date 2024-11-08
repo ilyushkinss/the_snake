@@ -43,6 +43,12 @@ class GameObject:
         """Метод отрисовки объекта"""
         raise NotImplementedError
 
+    def draw_section(self, position):
+        """Метод отрисовки ячейки"""
+        rect = pg.Rect(position, (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, self.body_color, rect)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+
 
 class Apple(GameObject):
     """Класс, описывающий яблоко"""
@@ -61,9 +67,7 @@ class Apple(GameObject):
 
     def draw(self):
         """Метод отрисовки яблока"""
-        rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.body_color, rect)
-        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+        self.draw_section(self.position)
 
 
 class Snake(GameObject):
@@ -98,12 +102,7 @@ class Snake(GameObject):
     def draw(self):
         """Метод отрисовки змейки"""
         for position in self.positions:
-            rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pg.draw.rect(screen, self.body_color, rect)
-            pg.draw.rect(screen, BORDER_COLOR, rect, 1)
-        # head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        # pg.draw.rect(screen, self.body_color, head_rect)
-        # pg.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+            self.draw_section(position)
 
     def get_head_position(self):
         """Функция, возвращающая позицию головы змейки"""
