@@ -35,9 +35,9 @@ clock = pg.time.Clock()
 class GameObject:
     """Родительский класс"""
 
-    def __init__(self) -> None:
-        self.position = None
-        self.body_color = BOARD_BACKGROUND_COLOR
+    def __init__(self, position=None, body_color=BOARD_BACKGROUND_COLOR):
+        self.position = position
+        self.body_color = body_color
 
     def draw(self):
         """Метод отрисовки объекта"""
@@ -56,14 +56,26 @@ class Apple(GameObject):
     def __init__(self):
         super().__init__()
         self.body_color = APPLE_COLOR
+        self.randomize_position()
+
+    def randomize_position(self, occupied_positions=[((SCREEN_WIDTH // 2),
+                                                      (SCREEN_HEIGHT // 2))]):
+        """Метод для установки положения яблока"""
         self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                          randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-
-    def randomize_position(self, snake_positions):
-        """Метод для установки положения яблока"""
-        while self.position in snake_positions:
+        while self.position in occupied_positions:
             self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                              randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+        #  В методе randomize_pozition я передал параметр occupied_positions,
+        #  который по умолчанию равен центральной клетке поля,
+        #  в которой появляется змея.
+        #  Это сделано для того, чтобы яблоко при первой его генерации
+        #  случайно не появилось в точке спавна змеи, то есть в клетке,
+        #  уже занятой змеей.
+        #  В остальных случаях occupied_pozitions будет
+        #  содержать координаты змеи.
+        #  Пока у меня больше нет мыслей как еще можно
+        #  реализовать этод метод
 
     def draw(self):
         """Метод отрисовки яблока"""
@@ -81,14 +93,14 @@ class Snake(GameObject):
 
     def update_direction(self):
         """Метод обновления направления после нажатия на кнопку"""
-        self.direction = self.next_direction
-        self.next_direction = None
+        if self.next_direction:
+            self.direction = self.next_direction
+            self.next_direction = None
 
     def move(self):
         """Метод, обновляющий позицию змейки"""
         self.get_head_position()
-        if self.next_direction:
-            self.update_direction()
+        self.update_direction()
 
         old_head = self.positions[0]
         x, y = self.direction
@@ -145,12 +157,12 @@ def main():
         handle_keys(snake)
         snake.move()
         if len(snake.positions
-               ) > 4 and snake.positions[0] in snake.positions[2:]:
+               ) > 4 and snake.positions[0] in snake.positions[4:]:
             snake.reset()
         if snake.get_head_position() == apple.position:
             snake.length += 1
-            snake_positions = snake.positions
-            apple.randomize_position(snake_positions)
+            occupied_positions = snake.positions
+            apple.randomize_position(occupied_positions)
 
         screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
