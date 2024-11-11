@@ -57,7 +57,7 @@ class Apple(GameObject):
         super().__init__()
         self.body_color = APPLE_COLOR
 
-    def randomize_position(self, occupied_positions=[]):
+    def randomize_position(self, occupied_positions):
         """Метод для установки положения яблока"""
         while True:
             self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
