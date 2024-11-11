@@ -56,26 +56,14 @@ class Apple(GameObject):
     def __init__(self):
         super().__init__()
         self.body_color = APPLE_COLOR
-        self.randomize_position()
 
-    def randomize_position(self, occupied_positions=[((SCREEN_WIDTH // 2),
-                                                      (SCREEN_HEIGHT // 2))]):
+    def randomize_position(self, occupied_positions=[]):
         """Метод для установки положения яблока"""
-        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                         randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-        while self.position in occupied_positions:
+        while True:
             self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                              randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-        #  В методе randomize_pozition я передал параметр occupied_positions,
-        #  который по умолчанию равен центральной клетке поля,
-        #  в которой появляется змея.
-        #  Это сделано для того, чтобы яблоко при первой его генерации
-        #  случайно не появилось в точке спавна змеи, то есть в клетке,
-        #  уже занятой змеей.
-        #  В остальных случаях occupied_pozitions будет
-        #  содержать координаты змеи.
-        #  Пока у меня больше нет мыслей как еще можно
-        #  реализовать этод метод
+            if self.position not in occupied_positions:
+                break
 
     def draw(self):
         """Метод отрисовки яблока"""
@@ -86,10 +74,10 @@ class Snake(GameObject):
     """Класс, описывающий змейку"""
 
     def __init__(self):
-        super().__init__()
+        super().__init__(body_color=SNAKE_COLOR)
         self.reset()
         self.direction = RIGHT
-        self.body_color = SNAKE_COLOR
+        self.body_color = self.body_color
 
     def update_direction(self):
         """Метод обновления направления после нажатия на кнопку"""
@@ -151,13 +139,14 @@ def main():
     # Инициализация PyGame:
     pg.init()
     snake = Snake()
+    occupied_positions = snake.positions
     apple = Apple()
+    apple.randomize_position(occupied_positions)
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
         snake.move()
-        if len(snake.positions
-               ) > 4 and snake.positions[0] in snake.positions[4:]:
+        if snake.positions[0] in snake.positions[4:]:
             snake.reset()
         if snake.get_head_position() == apple.position:
             snake.length += 1
